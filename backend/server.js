@@ -6,6 +6,9 @@ const cors = require("cors");
 const db = require("./config/db");
 const inventoryRoutes = require("./routes/inventoryRoutes");
 const transactionRoutes = require("./routes/transactionRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
+const forecastRoutes = require("./routes/forecastRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
@@ -14,6 +17,9 @@ app.use(express.json());
 
 app.use("/api/items", inventoryRoutes);
 app.use("/api/transactions", transactionRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/forecast", forecastRoutes);
+app.use("/api/auth", authRoutes);
 
 app.get("/", async (req, res) => {
   try {
