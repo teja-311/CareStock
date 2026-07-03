@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import api from "../services/api";
 
 import {
@@ -12,6 +14,8 @@ import {
 
 function Login() {
 
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -24,13 +28,18 @@ function Login() {
         password
       });
 
-      console.log(res.data);
+      localStorage.setItem("token", res.data.token);
 
-      alert("Login Successful");
+      localStorage.setItem(
+        "user",
+        JSON.stringify(res.data.user)
+      );
+
+      navigate("/dashboard");
 
     } catch (err) {
 
-      alert("Invalid Credentials");
+      alert("Invalid Email or Password");
 
     }
 
@@ -72,8 +81,8 @@ function Login() {
 
           <TextField
             fullWidth
-            label="Password"
             type="password"
+            label="Password"
             margin="normal"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
