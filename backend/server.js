@@ -15,7 +15,11 @@ const categoryRoutes = require("./routes/categoryRoutes");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: "https://carestock-gold.vercel.app",
+  credentials: true
+}));
+
 app.use(express.json());
 
 // Public routes
