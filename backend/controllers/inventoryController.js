@@ -5,7 +5,9 @@ exports.getItems = async(req,res)=>{
 
     try{
 
-        const data=await inventory.getAllItems();
+        const includeInactive = req.query.includeInactive === "true";
+
+        const data=await inventory.getAllItems(includeInactive);
 
         res.status(200).json({
             success: true,

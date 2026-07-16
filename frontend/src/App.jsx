@@ -3,6 +3,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Inventory from "./pages/Inventory";
+import ReceiveStock from "./pages/ReceiveStock";
+import IssueStock from "./pages/IssueStock";
+import TransactionHistory from "./pages/TransactionHistory";
+import Forecast from "./pages/Forecast";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
 
@@ -19,12 +24,56 @@ function App() {
 
         <Route
           path="/dashboard"
-          element={<Dashboard />}
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/inventory"
-          element={<Inventory />}
+          element={
+            <ProtectedRoute>
+              <Inventory />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/receive-stock"
+          element={
+            <ProtectedRoute>
+              <ReceiveStock />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/issue-stock"
+          element={
+            <ProtectedRoute>
+              <IssueStock />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/transaction-history"
+          element={
+            <ProtectedRoute>
+              <TransactionHistory />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/forecast"
+          element={
+            <ProtectedRoute>
+              <Forecast />
+            </ProtectedRoute>
+          }
         />
 
       </Routes>

@@ -10,7 +10,7 @@ const receiveStock = async (data) => {
 
         await connection.query(
             `INSERT INTO inventory_transactions
-            (item_id, transaction_type, source, quantity, remarks, created_by)
+            (item_id, transaction_type, reference, quantity, remarks, created_by)
             VALUES (?, 'RECEIVED', ?, ?, ?, ?)`,
             [
                 data.item_id,

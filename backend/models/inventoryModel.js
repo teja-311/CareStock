@@ -1,11 +1,15 @@
 const db = require("../config/db");
 
 // Get all active inventory items
-const getAllItems = async () => {
+const getAllItems = async (includeInactive = false) => {
+
+    const whereClause = includeInactive ? "" : "WHERE i.is_active = TRUE";
+
     const [rows] = await db.query(`
         SELECT
             i.item_id,
             i.item_name,
+            i.category_id,
             c.category_name,
             i.unit,
             i.current_stock,
@@ -17,7 +21,7 @@ const getAllItems = async () => {
         FROM inventory_items i
         JOIN inventory_categories c
             ON i.category_id = c.category_id
-        WHERE i.is_active = TRUE
+        ${whereClause}
         ORDER BY i.item_name;
     `);
 

@@ -4,22 +4,29 @@ const express = require("express");
 const cors = require("cors");
 
 const db = require("./config/db");
+const protect = require("./middleware/authMiddleware");
+
 const inventoryRoutes = require("./routes/inventoryRoutes");
 const transactionRoutes = require("./routes/transactionRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const forecastRoutes = require("./routes/forecastRoutes");
 const authRoutes = require("./routes/authRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/items", inventoryRoutes);
-app.use("/api/transactions", transactionRoutes);
-app.use("/api/dashboard", dashboardRoutes);
-app.use("/api/forecast", forecastRoutes);
+// Public routes
 app.use("/api/auth", authRoutes);
+
+// Protected routes — require valid JWT
+app.use("/api/items", protect, inventoryRoutes);
+app.use("/api/transactions", protect, transactionRoutes);
+app.use("/api/dashboard", protect, dashboardRoutes);
+app.use("/api/forecast", protect, forecastRoutes);
+app.use("/api/categories", protect, categoryRoutes);
 
 app.get("/", async (req, res) => {
   try {

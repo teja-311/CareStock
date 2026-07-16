@@ -67,23 +67,23 @@ VALUES
 -- =====================================================
 
 INSERT INTO inventory_transactions
-(item_id, transaction_type, quantity, source, remarks, created_by)
+(item_id, transaction_type, quantity, reference, remarks, created_by)
 VALUES
 
-(1,'IN',100,'Rotary Club','Food Donation',1),
-(1,'OUT',15,'Kitchen','Weekly Consumption',2),
+(1,'RECEIVED',100,'Rotary Club','Food Donation',1),
+(1,'ISSUED',15,'Kitchen','Weekly Consumption',2),
 
-(2,'IN',80,'Local Donor','Monthly Donation',1),
+(2,'RECEIVED',80,'Local Donor','Monthly Donation',1),
 
-(3,'IN',30,'Purchased','Invoice #101',1),
-(3,'OUT',5,'Kitchen','Cooking Use',2),
+(3,'RECEIVED',30,'Purchased','Invoice #101',1),
+(3,'ISSUED',5,'Kitchen','Cooking Use',2),
 
-(4,'IN',50,'Apollo Pharmacy','Medicine Donation',1),
-(4,'OUT',8,'Medical Room','Patient Usage',2),
+(4,'RECEIVED',50,'Apollo Pharmacy','Medicine Donation',1),
+(4,'ISSUED',8,'Medical Room','Patient Usage',2),
 
-(6,'IN',100,'Lions Club','Donation',1),
-(6,'OUT',10,'Residents','Daily Use',2),
+(6,'RECEIVED',100,'Lions Club','Donation',1),
+(6,'ISSUED',10,'Residents','Daily Use',2),
 
-(8,'IN',40,'School Volunteers','Education Kit',1),
+(8,'RECEIVED',40,'School Volunteers','Education Kit',1),
 
-(10,'IN',20,'Purchased','Cleaning Supplies',1);
+(10,'RECEIVED',20,'Purchased','Cleaning Supplies',1);

@@ -79,7 +79,7 @@ CREATE TABLE inventory_transactions (
 
     transaction_type ENUM('RECEIVED','ISSUED','ADJUSTMENT') NOT NULL,
 
-    source ENUM('DONATION','PURCHASE','OTHER') DEFAULT 'OTHER',
+    reference VARCHAR(100) DEFAULT NULL,
 
     quantity DECIMAL(10,2) NOT NULL CHECK(quantity > 0),
 
