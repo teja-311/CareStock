@@ -4,18 +4,20 @@ USE carestock_db;
 -- USERS
 -- =====================================================
 
+-- Default password for admin@carestock.com: admin123
+-- Default password for staff@carestock.com: staff123
 INSERT INTO users (full_name, email, password_hash, role)
 VALUES
 (
 'Administrator',
 'admin@carestock.com',
-'$2b$10$abcdefghijklmnopqrstuv123456789012345678901234567890',
+'$2b$10$oSB6.aXhrfw2rDYjPe2ngeLuGf3J1q4RpIsnfTSJgS3pGdxWNcn4y',
 'admin'
 ),
 (
 'NGO Staff',
 'staff@carestock.com',
-'$2b$10$abcdefghijklmnopqrstuv123456789012345678901234567890',
+'$2b$10$.OVrRgoQqc0XhGs1sVnYHenODSYLa79cR0AxKVEUT6J84eIh/h42.',
 'staff'
 );
 

@@ -15,8 +15,19 @@ const categoryRoutes = require("./routes/categoryRoutes");
 
 const app = express();
 
+const allowedOrigins = [
+  "https://carestock-gold.vercel.app",
+  "http://localhost:5173"
+];
+
 app.use(cors({
-  origin: "https://carestock-gold.vercel.app",
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
 

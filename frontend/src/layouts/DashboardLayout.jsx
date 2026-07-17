@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import {
   AppBar,
   Box,
@@ -13,8 +15,10 @@ import {
   Avatar,
   Divider,
   IconButton,
-  Tooltip
+  Tooltip,
+  useMediaQuery
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 import {
   Dashboard as DashboardIcon,
@@ -24,7 +28,8 @@ import {
   History as HistoryIcon,
   TrendingUp as TrendingUpIcon,
   ExitToApp as ExitToAppIcon,
-  VolunteerActivism as VolunteerActivismIcon
+  VolunteerActivism as VolunteerActivismIcon,
+  Menu as MenuIcon
 } from "@mui/icons-material";
 
 import { useNavigate, useLocation } from "react-router-dom";
@@ -34,6 +39,9 @@ const drawerWidth = 260;
 function DashboardLayout({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   // Retrieve current user info
   const storedUser = JSON.parse(localStorage.getItem("user")) || {
@@ -66,6 +74,100 @@ function DashboardLayout({ children }) {
       .slice(0, 2);
   };
 
+  const handleNavigate = (path) => {
+    navigate(path);
+    if (!isDesktop) setMobileOpen(false);
+  };
+
+  const drawerContent = (
+    <>
+      <Box>
+        {/* Logo Header */}
+        <Toolbar sx={{ gap: 1.5, px: 2.5, bgcolor: "#0b0f19" }}>
+          <VolunteerActivismIcon sx={{ color: "primary.light", fontSize: 28 }} />
+          <Typography
+            variant="h5"
+            fontWeight="800"
+            color="#ffffff"
+            sx={{ fontFamily: "Outfit", letterSpacing: 0.5 }}
+          >
+            CareStock
+          </Typography>
+        </Toolbar>
+
+        <Divider sx={{ borderColor: "#1e293b" }} />
+
+        {/* Navigation Links */}
+        <List sx={{ px: 1.5, py: 2, gap: 0.5, display: "flex", flexDirection: "column" }}>
+          {menuItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <ListItem key={item.text} disablePadding>
+                <ListItemButton
+                  onClick={() => handleNavigate(item.path)}
+                  sx={{
+                    borderRadius: 2,
+                    py: 1.25,
+                    px: 2,
+                    transition: "all 0.2s",
+                    bgcolor: isActive ? "rgba(13, 148, 136, 0.15)" : "transparent",
+                    color: isActive ? "#ffffff" : "#94a3b8",
+                    "& .MuiListItemIcon-root": {
+                      color: isActive ? "primary.light" : "#64748b",
+                      minWidth: 40,
+                    },
+                    "&:hover": {
+                      bgcolor: isActive ? "rgba(13, 148, 136, 0.2)" : "rgba(255, 255, 255, 0.04)",
+                      color: "#ffffff",
+                      "& .MuiListItemIcon-root": {
+                        color: isActive ? "primary.light" : "#94a3b8",
+                      }
+                    }
+                  }}
+                >
+                  <ListItemIcon>{item.icon}</ListItemIcon>
+                  <ListItemText
+                    primary={item.text}
+                    primaryTypographyProps={{
+                      fontSize: "0.9rem",
+                      fontWeight: isActive ? "600" : "500",
+                      fontFamily: "Outfit"
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+        </List>
+      </Box>
+
+      {/* User Info / Logout Footer */}
+      <Box sx={{ p: 2, bgcolor: "#0b0f19" }}>
+        <Divider sx={{ borderColor: "#1e293b", mb: 2 }} />
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <Avatar sx={{ bgcolor: "#1e293b", color: "#ffffff", width: 36, height: 36, fontSize: "0.875rem", fontWeight: "600", border: "1px solid", borderColor: "#334155" }}>
+              {getInitials(storedUser.full_name)}
+            </Avatar>
+            <Box sx={{ maxWidth: 140 }}>
+              <Typography variant="body2" fontWeight="600" color="#ffffff" noWrap>
+                {storedUser.full_name}
+              </Typography>
+              <Typography variant="caption" color="#64748b" noWrap display="block" sx={{ textTransform: "capitalize" }}>
+                {storedUser.role} Account
+              </Typography>
+            </Box>
+          </Box>
+          <Tooltip title="Log out" placement="top">
+            <IconButton onClick={handleLogout} sx={{ color: "#ef4444", "&:hover": { bgcolor: "rgba(239, 68, 68, 0.08)" } }}>
+              <ExitToAppIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      </Box>
+    </>
+  );
+
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "background.default" }}>
       <CssBaseline />
@@ -75,8 +177,8 @@ function DashboardLayout({ children }) {
         position="fixed"
         elevation={0}
         sx={{
-          width: `calc(100% - ${drawerWidth}px)`,
-          ml: `${drawerWidth}px`,
+          width: { xs: "100%", md: `calc(100% - ${drawerWidth}px)` },
+          ml: { md: `${drawerWidth}px` },
           bgcolor: "background.paper",
           color: "text.primary",
           borderBottom: "1px solid",
@@ -84,9 +186,18 @@ function DashboardLayout({ children }) {
         }}
       >
         <Toolbar sx={{ justifyContent: "space-between" }}>
-          <Typography variant="h6" fontWeight="700" color="text.primary" sx={{ fontFamily: "Outfit" }}>
-            {menuItems.find((item) => item.path === location.pathname)?.text || "CareStock"}
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <IconButton
+              onClick={() => setMobileOpen(true)}
+              sx={{ display: { xs: "inline-flex", md: "none" }, color: "text.primary" }}
+              aria-label="Open navigation menu"
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" fontWeight="700" color="text.primary" noWrap sx={{ fontFamily: "Outfit" }}>
+              {menuItems.find((item) => item.path === location.pathname)?.text || "CareStock"}
+            </Typography>
+          </Box>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Box sx={{ textAlign: "right", display: { xs: "none", sm: "block" } }}>
@@ -104,117 +215,59 @@ function DashboardLayout({ children }) {
         </Toolbar>
       </AppBar>
 
-      {/* Sidebar Drawer */}
-      <Drawer
-        variant="permanent"
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
+      {/* Sidebar Drawer — temporary/overlay on mobile, permanent on desktop */}
+      <Box component="nav" sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}>
+        <Drawer
+          variant="temporary"
+          open={mobileOpen}
+          onClose={() => setMobileOpen(false)}
+          ModalProps={{ keepMounted: true }}
+          sx={{
+            display: { xs: "block", md: "none" },
+            "& .MuiDrawer-paper": {
+              width: drawerWidth,
+              boxSizing: "border-box",
+              bgcolor: "#0f172a",
+              color: "#94a3b8",
+              borderRight: "none",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between"
+            }
+          }}
+        >
+          {drawerContent}
+        </Drawer>
+
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: "none", md: "block" },
             width: drawerWidth,
-            boxSizing: "border-box",
-            bgcolor: "#0f172a", // Sleek dark slate
-            color: "#94a3b8",
-            borderRight: "none",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between"
-          }
-        }}
-      >
-        <Box>
-          {/* Logo Header */}
-          <Toolbar sx={{ gap: 1.5, px: 2.5, bgcolor: "#0b0f19" }}>
-            <VolunteerActivismIcon sx={{ color: "primary.light", fontSize: 28 }} />
-            <Typography
-              variant="h5"
-              fontWeight="800"
-              color="#ffffff"
-              sx={{ fontFamily: "Outfit", letterSpacing: 0.5 }}
-            >
-              CareStock
-            </Typography>
-          </Toolbar>
-
-          <Divider sx={{ borderColor: "#1e293b" }} />
-
-          {/* Navigation Links */}
-          <List sx={{ px: 1.5, py: 2, gap: 0.5, display: "flex", flexDirection: "column" }}>
-            {menuItems.map((item) => {
-              const isActive = location.pathname === item.path;
-              return (
-                <ListItem key={item.text} disablePadding>
-                  <ListItemButton
-                    onClick={() => navigate(item.path)}
-                    sx={{
-                      borderRadius: 2,
-                      py: 1.25,
-                      px: 2,
-                      transition: "all 0.2s",
-                      bgcolor: isActive ? "rgba(13, 148, 136, 0.15)" : "transparent",
-                      color: isActive ? "#ffffff" : "#94a3b8",
-                      "& .MuiListItemIcon-root": {
-                        color: isActive ? "primary.light" : "#64748b",
-                        minWidth: 40,
-                      },
-                      "&:hover": {
-                        bgcolor: isActive ? "rgba(13, 148, 136, 0.2)" : "rgba(255, 255, 255, 0.04)",
-                        color: "#ffffff",
-                        "& .MuiListItemIcon-root": {
-                          color: isActive ? "primary.light" : "#94a3b8",
-                        }
-                      }
-                    }}
-                  >
-                    <ListItemIcon>{item.icon}</ListItemIcon>
-                    <ListItemText
-                      primary={item.text}
-                      primaryTypographyProps={{
-                        fontSize: "0.9rem",
-                        fontWeight: isActive ? "600" : "500",
-                        fontFamily: "Outfit"
-                      }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              );
-            })}
-          </List>
-        </Box>
-
-        {/* User Info / Logout Footer */}
-        <Box sx={{ p: 2, bgcolor: "#0b0f19" }}>
-          <Divider sx={{ borderColor: "#1e293b", mb: 2 }} />
-          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-              <Avatar sx={{ bgcolor: "#1e293b", color: "#ffffff", width: 36, height: 36, fontSize: "0.875rem", fontWeight: "600", border: "1px solid", borderColor: "#334155" }}>
-                {getInitials(storedUser.full_name)}
-              </Avatar>
-              <Box sx={{ maxWidth: 140 }}>
-                <Typography variant="body2" fontWeight="600" color="#ffffff" noWrap>
-                  {storedUser.full_name}
-                </Typography>
-                <Typography variant="caption" color="#64748b" noWrap display="block" sx={{ textTransform: "capitalize" }}>
-                  {storedUser.role} Account
-                </Typography>
-              </Box>
-            </Box>
-            <Tooltip title="Log out" placement="top">
-              <IconButton onClick={handleLogout} sx={{ color: "#ef4444", "&:hover": { bgcolor: "rgba(239, 68, 68, 0.08)" } }}>
-                <ExitToAppIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </Box>
-      </Drawer>
+            "& .MuiDrawer-paper": {
+              width: drawerWidth,
+              boxSizing: "border-box",
+              bgcolor: "#0f172a", // Sleek dark slate
+              color: "#94a3b8",
+              borderRight: "none",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between"
+            }
+          }}
+        >
+          {drawerContent}
+        </Drawer>
+      </Box>
 
       {/* Main Content Area */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
+          minWidth: 0,
           p: { xs: 2, sm: 3, md: 4, lg: 5 },
-          width: `calc(100% - ${drawerWidth}px)`,
+          width: { xs: "100%", md: `calc(100% - ${drawerWidth}px)` },
           minHeight: "100vh",
           display: "flex",
           flexDirection: "column"
